@@ -1,4 +1,4 @@
-module monkiato/apio-orchestrator
+module github.com/monkiato/apio-orchestrator
 
 go 1.14
 
