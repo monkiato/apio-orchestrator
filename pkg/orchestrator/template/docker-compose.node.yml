@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  apio:
+    image: monkiato/api
+    container_name: apio-{node_name}
+    volumes:
+      - "{manifest_path}:/app/manifest.json"
+    environment:
+      MONGODB_HOST: "mongodb:27017"
+      MONGODB_NAME: apio
+      DEBUG_MODE: 1
+    networks:
+      - apio-network
+
+networks:
+  apio-network:
+    external: true
