@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/monkiato/apio-orchestrator/pkg/orchestrator"
 	"github.com/spf13/cobra"
 )
 
@@ -43,7 +42,7 @@ func createNode(nodeId string) error {
 		return err
 	}
 
-	nodeOrchestrator, _ := orchestrator.NewNodeOrchestrator(nodeId, persistenceConnection)
+	nodeOrchestrator := createNodeOrchestrator(nodeId)
 
 	_, err = nodeOrchestrator.CreateNode()
 	if err != nil {

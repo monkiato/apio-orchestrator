@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/monkiato/apio-orchestrator/pkg/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"io/ioutil"
 )
 
@@ -28,7 +29,7 @@ func init() {
 
 func listNodes() error {
 	fmt.Println("NODES")
-	files, err := ioutil.ReadDir(config.RootNodeFolder)
+	files, err := ioutil.ReadDir(viper.GetString("config_path") + config.NodeFolder)
 	if err != nil {
 		return err
 	}

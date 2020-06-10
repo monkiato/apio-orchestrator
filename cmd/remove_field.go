@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/monkiato/apio-orchestrator/internal/tools"
-	"github.com/monkiato/apio-orchestrator/pkg/orchestrator"
 	"github.com/spf13/cobra"
 )
 
@@ -50,6 +49,6 @@ func init() {
 }
 
 func removeField(nodeId string, collectionName string, field string) error {
-	nodeOrchestrator, _ := orchestrator.NewNodeOrchestrator(nodeId, persistenceConnection)
+	nodeOrchestrator := createNodeOrchestrator(nodeId)
 	return nodeOrchestrator.RemoveField(collectionName, field)
 }

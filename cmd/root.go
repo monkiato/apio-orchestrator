@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"github.com/monkiato/apio-orchestrator/internal/data"
 	"github.com/monkiato/apio-orchestrator/internal/tools"
+	"github.com/monkiato/apio-orchestrator/pkg/config"
+	"github.com/monkiato/apio-orchestrator/pkg/node"
+	"github.com/monkiato/apio-orchestrator/pkg/orchestrator"
 	"github.com/monkiato/apio-orchestrator/pkg/persistence"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 )
@@ -17,6 +21,8 @@ const (
 
 var (
 	persistenceConnection persistence.Connection
+	nodeDockerConfig      *node.DockerConfig
+	cfgFile               string
 	manifestPath          string
 
 	rootCmd = &cobra.Command{
@@ -35,9 +41,21 @@ func Execute() {
 }
 
 func init() {
-	persistenceConnection = persistence.NewFileConnection()
-
 	cobra.OnInitialize(initConfig)
+
+	viper.SetDefault("domain_name", config.DefaultDomainName)
+	viper.SetDefault("network_name", config.DefaultNetworkName)
+	viper.SetDefault("apio_node_prefix", config.DefaultNodePrefix)
+	viper.SetDefault("config_path", config.DefaultConfigPath)
+	viper.SetDefault("mongodb.host", config.DefaultMongoDbHost)
+	viper.SetDefault("mongodb.name", config.DefaultMongoDbName)
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
+	viper.AddConfigPath("/etc/apio-orchestrator/")  // path to look for the config file in
+	viper.AddConfigPath("$HOME/.apio-orchestrator") // call multiple times to add many search paths
+	viper.AddConfigPath(".")                        // optionally look for config in the working directory
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file absolute path")
 
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(startCmd)
@@ -58,11 +76,42 @@ func onError(msg interface{}) {
 }
 
 func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	}
 
+	err := viper.ReadInConfig()
+	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// Config file was found but another error was produced
+			panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		}
+	}
+
+	configPath := viper.GetString("config_path")
+	persistenceConnection = persistence.NewFileConnection(configPath)
+	node.SetRootConfigPath(configPath)
+
+	nodeDockerConfig = &node.DockerConfig{
+		NetworkName:         viper.GetString("network_name"),
+		DomainName:          viper.GetString("domain_name"),
+		ContainerNamePrefix: viper.GetString("apio_node_prefix"),
+		MongoDbHost:         viper.GetString("mongodb.host"),
+		MongoDbName:         viper.GetString("mongodb.name"),
+	}
 }
 
 func isValidNodeId(nodeId string) bool {
 	return tools.IsValidFormat(nodeId, validNodeIdChars)
+}
+
+func createNodeOrchestrator(nodeId string) *orchestrator.NodeOrchestrator {
+	nodeOrchestrator, err := orchestrator.NewNodeOrchestrator(nodeId, nodeDockerConfig, persistenceConnection)
+	if err != nil {
+		onError(err)
+	}
+	return nodeOrchestrator
 }
 
 func readCollections(manifestPath string) ([]data.CollectionDefinition, error) {

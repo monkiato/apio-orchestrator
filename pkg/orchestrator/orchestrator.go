@@ -22,12 +22,13 @@ import (
 )
 
 type NodeOrchestrator struct {
-	node         *node.Metadata
-	dockerClient *client.Client
-	persistence  persistence.Connection
+	node             *node.Metadata
+	nodeDockerConfig *node.DockerConfig
+	dockerClient     *client.Client
+	persistence      persistence.Connection
 }
 
-func NewNodeOrchestrator(nodeId string, persistence persistence.Connection) (*NodeOrchestrator, error) {
+func NewNodeOrchestrator(nodeId string, nodeDockerConfig *node.DockerConfig, persistence persistence.Connection) (*NodeOrchestrator, error) {
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
 		return nil, err
@@ -47,8 +48,9 @@ func NewNodeOrchestrator(nodeId string, persistence persistence.Connection) (*No
 			Collections: collections,
 			Active:      true,
 		},
-		dockerClient: dockerClient,
-		persistence:  persistence,
+		nodeDockerConfig: nodeDockerConfig,
+		dockerClient:     dockerClient,
+		persistence:      persistence,
 	}
 	if err := orchestrator.fetchImage(); err != nil {
 		return nil, err
@@ -57,7 +59,7 @@ func NewNodeOrchestrator(nodeId string, persistence persistence.Connection) (*No
 }
 
 func (orchestrator *NodeOrchestrator) CreateNode() (*models.Node, error) {
-	if err := node.CreateNodeFolder(orchestrator.node.Name); err != nil {
+	if err := node.CreateNodeConfigFolder(orchestrator.node.Name); err != nil {
 		return nil, err
 	}
 	if err := orchestrator.createNodeManifest(); err != nil {
@@ -228,7 +230,6 @@ func (orchestrator *NodeOrchestrator) AddField(collectionName string, field stri
 	return orchestrator.restartContainer(nodeData.ContainerId)
 }
 
-
 func (orchestrator *NodeOrchestrator) RemoveField(collectionName string, field string) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -266,16 +267,16 @@ func (orchestrator *NodeOrchestrator) RemoveField(collectionName string, field s
 func (orchestrator *NodeOrchestrator) createContainer() (string, error) {
 	ctx := context.Background()
 
-	hostName := fmt.Sprintf("apio-%s.%s", orchestrator.node.Name, config.DomainName)
+	hostName := fmt.Sprintf("apio-%s.%s", orchestrator.node.Name, orchestrator.nodeDockerConfig.DomainName)
 
 	containerConfig := &container.Config{
 		Image: config.ApiDockerImage,
 		Env: []string{
-			"MONGODB_HOST=mongodb:27017",
-			"MONGODB_NAME=apio",
+			fmt.Sprintf("MONGODB_HOST=%s", orchestrator.nodeDockerConfig.MongoDbHost),
+			fmt.Sprintf("MONGODB_NAME=%s", orchestrator.nodeDockerConfig.MongoDbName),
 			"DEBUG_MODE=1",
 		},
-		Labels: proxy.GetTraefikLabels("apio_"+orchestrator.node.Name, hostName, config.NetworkName, 80),
+		Labels: proxy.GetTraefikLabels("apio_"+orchestrator.node.Name, hostName, orchestrator.nodeDockerConfig.NetworkName, 80),
 	}
 	hostConfig := &container.HostConfig{
 		Mounts: []mount.Mount{
@@ -288,7 +289,7 @@ func (orchestrator *NodeOrchestrator) createContainer() (string, error) {
 	}
 	networkConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			config.NetworkName: {},
+			orchestrator.nodeDockerConfig.NetworkName: {},
 		},
 	}
 
@@ -297,7 +298,7 @@ func (orchestrator *NodeOrchestrator) createContainer() (string, error) {
 		containerConfig,
 		hostConfig,
 		networkConfig,
-		fmt.Sprintf("%s%s", config.NodePrefix, orchestrator.node.Name),
+		fmt.Sprintf("%s%s", orchestrator.nodeDockerConfig.ContainerNamePrefix, orchestrator.node.Name),
 	)
 	if err != nil {
 		return "", err
@@ -335,7 +336,7 @@ func (orchestrator *NodeOrchestrator) ensureNetworkIsCreated() error {
 	if orchestrator.networkExists() {
 		return nil
 	}
-	_, err := orchestrator.dockerClient.NetworkCreate(ctx, config.NetworkName, types.NetworkCreate{})
+	_, err := orchestrator.dockerClient.NetworkCreate(ctx, orchestrator.nodeDockerConfig.NetworkName, types.NetworkCreate{})
 	if err != nil {
 		return err
 	}
@@ -346,14 +347,14 @@ func (orchestrator *NodeOrchestrator) networkExists() bool {
 	ctx := context.Background()
 
 	args := filters.NewArgs()
-	args.Add("name", config.NetworkName)
+	args.Add("name", orchestrator.nodeDockerConfig.NetworkName)
 	listResult, err := orchestrator.dockerClient.NetworkList(ctx, types.NetworkListOptions{Filters: args})
 	if err != nil {
 		return false
 	}
 
 	for _, networkResult := range listResult {
-		if networkResult.Name == config.NetworkName {
+		if networkResult.Name == orchestrator.nodeDockerConfig.NetworkName {
 			//network found
 			return true
 		}

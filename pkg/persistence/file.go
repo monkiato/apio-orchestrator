@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/monkiato/apio-orchestrator/internal/models"
-	"github.com/monkiato/apio-orchestrator/pkg/config"
 	"github.com/monkiato/apio-orchestrator/pkg/node"
 	"io/ioutil"
 	"os"
@@ -12,13 +11,13 @@ import (
 )
 
 type FileConnection struct {
-	rootFolder string
+	configPath string
 }
 
 //NewFileConnection create a new FileConnection instance
-func NewFileConnection() Connection {
+func NewFileConnection(configPath string) Connection {
 	return &FileConnection{
-		rootFolder: config.RootFolder,
+		configPath: configPath,
 	}
 }
 
