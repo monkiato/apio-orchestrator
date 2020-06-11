@@ -17,7 +17,7 @@
     - name: coverage
       image: plugins/codecov
       settings:
-#        token: f94217d3-9e6e-4fb7-b725-ff155c1b24bc
+        token: 7382844c-05a5-401d-a02c-235096ed130d
         files:
           - coverage.txt
 
