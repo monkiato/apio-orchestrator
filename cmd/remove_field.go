@@ -10,7 +10,7 @@ import (
 var (
 	removeFieldCmd = &cobra.Command{
 		Use:   "removeField [node id] [collection name]",
-		Short: "delete an existing field definition for the specified node id and collection",
+		Short: "remove an existing field definition for the specified node id and collection",
 		Long: `removeField (api-orchestrator removeField) will delete an existing field definition for the
 specified node id and collection.
 

@@ -9,7 +9,7 @@ import (
 var (
 	startCmd = &cobra.Command{
 		Use:   "start [node id]",
-		Short: "Start an existing docker container for the specified Apio node",
+		Short: "start an existing docker container for the specified Apio node",
 		Long: `Start (api-orchestrator start) will start an existing Apio node in your local docker
 instance.
 

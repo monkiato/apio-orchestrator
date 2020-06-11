@@ -9,7 +9,7 @@ import (
 var (
 	stopCmd = &cobra.Command{
 		Use:   "stop [node id]",
-		Short: "Stop an existing docker container for the specified Apio node",
+		Short: "stop an existing docker container for the specified Apio node",
 		Long: `Stop (api-orchestrator stop) will stop an existing Apio node in your local docker
 instance.
 
