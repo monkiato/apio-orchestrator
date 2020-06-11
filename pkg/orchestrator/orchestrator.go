@@ -21,6 +21,7 @@ import (
 	"time"
 )
 
+//NodeOrchestrator provides functionality to interact with a single apio node (create, remove, edit)
 type NodeOrchestrator struct {
 	node             *node.Metadata
 	nodeDockerConfig *node.DockerConfig
@@ -28,6 +29,7 @@ type NodeOrchestrator struct {
 	persistence      persistence.Connection
 }
 
+//NewNodeOrchestrator create new NodeOrchestrator instance to manipulate the specified nodeId
 func NewNodeOrchestrator(nodeId string, nodeDockerConfig *node.DockerConfig, persistence persistence.Connection) (*NodeOrchestrator, error) {
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
@@ -58,6 +60,7 @@ func NewNodeOrchestrator(nodeId string, nodeDockerConfig *node.DockerConfig, per
 	return orchestrator, nil
 }
 
+//CreateNode create new Apio node in docker. Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) CreateNode() (*models.Node, error) {
 	if err := node.CreateNodeConfigFolder(orchestrator.node.Name); err != nil {
 		return nil, err
@@ -89,6 +92,8 @@ func (orchestrator *NodeOrchestrator) CreateNode() (*models.Node, error) {
 	return node, nil
 }
 
+//StartNode will start the docker container associated to the Apio node.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) StartNode() error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -100,6 +105,8 @@ func (orchestrator *NodeOrchestrator) StartNode() error {
 	return nil
 }
 
+//StopNode will stop the docker container associated to the Apio node.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) StopNode() error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -111,6 +118,8 @@ func (orchestrator *NodeOrchestrator) StopNode() error {
 	return nil
 }
 
+//RemoveNode will remove the docker container associated to the Apio node.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) RemoveNode() error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -135,6 +144,8 @@ func (orchestrator *NodeOrchestrator) RemoveNode() error {
 	return os.RemoveAll(node.NodeFolder(orchestrator.node.Name))
 }
 
+//UpdateCollections override existing node collections with the new collections passed by param.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) UpdateCollections(collections []data.CollectionDefinition) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -151,6 +162,8 @@ func (orchestrator *NodeOrchestrator) UpdateCollections(collections []data.Colle
 	return orchestrator.restartContainer(nodeData.ContainerId)
 }
 
+//AddCollection add a new collection to the node, existing collection are not modified and remain associated to the node.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) AddCollection(newCollection data.CollectionDefinition) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -173,6 +186,8 @@ func (orchestrator *NodeOrchestrator) AddCollection(newCollection data.Collectio
 	return orchestrator.restartContainer(nodeData.ContainerId)
 }
 
+//RemoveCollection remove an existing collection in the node.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) RemoveCollection(collectionName string) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -201,6 +216,8 @@ func (orchestrator *NodeOrchestrator) RemoveCollection(collectionName string) er
 	return orchestrator.restartContainer(nodeData.ContainerId)
 }
 
+//AddField add a single field to the specified collection, field name and type must be specified.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) AddField(collectionName string, field string, fieldType string) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {
@@ -230,6 +247,8 @@ func (orchestrator *NodeOrchestrator) AddField(collectionName string, field stri
 	return orchestrator.restartContainer(nodeData.ContainerId)
 }
 
+//RemoveField remove a single field from the specified collection.
+//Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) RemoveField(collectionName string, field string) error {
 	nodeData, exists := orchestrator.persistence.GetNode(orchestrator.node.Name)
 	if !exists {

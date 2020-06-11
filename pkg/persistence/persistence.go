@@ -4,6 +4,8 @@ import (
 	"github.com/monkiato/apio-orchestrator/internal/models"
 )
 
+//Connection is used for Apio node storage, it can represent a connection to
+//a local folder, SQL DB, or any other kind of storage type
 type Connection interface {
 	//GetNode looks for a specific node data in the storage/DB
 	GetNode(nodeId string) (*models.Node, bool)

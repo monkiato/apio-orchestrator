@@ -5,6 +5,8 @@ import (
 	"github.com/monkiato/apio-orchestrator/internal/models"
 )
 
+//SqlConnection provides persistence functionality for Apio nodes info using a SQL database
+//(to store manifest used for collections and metadata for node declaration and visibility)
 type SqlConnection struct {
 	db *gorm.DB
 }

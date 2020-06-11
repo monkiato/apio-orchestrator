@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+//FileConnection provides disk persistence functionality for Apio nodes info
+//(manifest used for collections and metadata for node declaration and visibility)
 type FileConnection struct {
 	configPath string
 }

@@ -33,6 +33,7 @@ to handle new or existing Apio containers and modify their collections`,
 	}
 )
 
+//Execute run root command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
