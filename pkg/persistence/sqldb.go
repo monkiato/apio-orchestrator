@@ -38,7 +38,6 @@ func (conn *SqlConnection) CreateNode(node *models.Node) error {
 	return conn.db.Create(node).Error
 }
 
-
 //UpdateNode updates existing node in the DB
 func (conn *SqlConnection) UpdateNode(node *models.Node) error {
 	return conn.db.Save(&node).Error

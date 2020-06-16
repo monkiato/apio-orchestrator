@@ -46,7 +46,7 @@ func init() {
 func addCollection(nodeId string, collectionName string) error {
 	nodeOrchestrator := createNodeOrchestrator(nodeId)
 	return nodeOrchestrator.AddCollection(data.CollectionDefinition{
-		Name: collectionName,
+		Name:   collectionName,
 		Fields: map[string]string{},
 	})
 }
