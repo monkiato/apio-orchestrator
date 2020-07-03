@@ -1,9 +1,10 @@
+<img src="docs/logo.svg" width="30%"/>
+
+# Apio Orchestrator
+
 [![Build Status](https://drone.monkiato.com/api/badges/monkiato/apio-orchestrator/status.svg)](https://drone.monkiato.com/monkiato/apio-orchestrator)
 [![codecov](https://codecov.io/gh/monkiato/apio-orchestrator/branch/master/graph/badge.svg)](https://codecov.io/gh/monkiato/apio-orchestrator)
 [![Go Report Card](https://goreportcard.com/badge/github.com/monkiato/apio-orchestrator)](https://goreportcard.com/report/github.com/monkiato/apio-orchestrator)
-
-
-# Apio Orchestrator
 
 An orchestrator library for managing Apio nodes in docker.
 
@@ -94,3 +95,6 @@ To build the project and generate the api-orchestrator CLI run:
  
      go build -o bin/apio-orchestrator .
  
+ # 'Apio Orchestrator' Logo
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
