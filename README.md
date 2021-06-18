@@ -15,6 +15,10 @@ Features:
  - Using MongoDB as data storage
  - apio-orchestrator CLI for command line operation
 
+## Sample files
+
+Sample files and documentation available in [sample](sample) folder.
+
 ## CLI
 
 To list available commands either run `apio-orchestrator` or `apio-orchestrator -h`

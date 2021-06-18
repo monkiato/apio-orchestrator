@@ -1,0 +1,4 @@
+{
+  "domain_name": "my.domain",
+  "config_path": "/var/lib/apio-orchestrator/"
+}
