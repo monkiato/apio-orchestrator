@@ -18,7 +18,7 @@ Example: apio-orchestrator start my-client-crm`,
 			if err := startNode(args[0]); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Apio node '%s' started successfully", args[0])
+			fmt.Printf("Apio node '%s' started successfully\n", args[0])
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

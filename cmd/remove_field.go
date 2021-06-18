@@ -22,7 +22,7 @@ Example: apio-orchestrator removeField my-client-crm authors name`,
 			if err := removeField(nodeId, collection, field); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Field '%s' removed successfully for node id '%s' and collection '%s", field, nodeId, collection)
+			fmt.Printf("Field '%s' removed successfully for node id '%s' and collection '%s'\n", field, nodeId, collection)
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

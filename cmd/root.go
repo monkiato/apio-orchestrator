@@ -76,8 +76,21 @@ func onError(msg interface{}) {
 	os.Exit(1)
 }
 
+func isDir(path string) (bool, error) {
+	fi, err := os.Stat(path)
+    if err != nil {
+        return false, fmt.Errorf("Unable to read file stats")
+    }
+    mode := fi.Mode()
+	return mode.IsDir(), nil
+}
+
 func initConfig() {
 	if cfgFile != "" {
+		if r, err := isDir(cfgFile); err != nil || r {
+			fmt.Printf("error: invalid config file '%s'\n", cfgFile)
+			os.Exit(1)
+		}
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	}
@@ -86,7 +99,7 @@ func initConfig() {
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			// Config file was found but another error was produced
-			panic(fmt.Errorf("Fatal error config file: %s \n", err))
+			panic(fmt.Errorf("Fatal error config file: %s", err))
 		}
 	}
 

@@ -18,7 +18,7 @@ Example: apio-orchestrator update my-client-crm`,
 			if err := updateNode(args[0]); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Apio node '%s' updateed successfully", args[0])
+			fmt.Printf("Apio node '%s' updateed successfully\n", args[0])
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

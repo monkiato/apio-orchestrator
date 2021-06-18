@@ -25,7 +25,7 @@ Example: apio-orchestrator addField my-client-crm authors name string`,
 			if err := addField(nodeId, collection, field, fieldType); err != nil {
 				onError(err)
 			}
-			fmt.Printf("New field '%s' (%s) added successfully for node id '%s' and collection '%s", field, fieldType, nodeId, collection)
+			fmt.Printf("New field '%s' (%s) added successfully for node id '%s' and collection '%s\n", field, fieldType, nodeId, collection)
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

@@ -19,7 +19,7 @@ Example: apio-orchestrator removeCollection my-client-crm authors`,
 			if err := removeCollection(args[0], args[1]); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Collection '%s' removed successfully for node id '%s'", args[1], args[0])
+			fmt.Printf("Collection '%s' removed successfully for node id '%s'\n", args[1], args[0])
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

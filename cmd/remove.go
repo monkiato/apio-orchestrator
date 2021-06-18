@@ -18,7 +18,7 @@ Example: apio-orchestrator remove my-client-crm`,
 			if err := removeNode(args[0]); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Apio node '%s' removed successfully", args[0])
+			fmt.Printf("Apio node '%s' removed successfully\n", args[0])
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

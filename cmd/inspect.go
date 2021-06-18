@@ -40,11 +40,11 @@ func init() {
 func inspectNode(nodeId string) error {
 	metadata, err := ioutil.ReadFile(node.MetadataFile(nodeId))
 	if err != nil {
-		return err
+		return fmt.Errorf("metadata not found for node ID '%s'", nodeId)
 	}
 	manifestData, err := ioutil.ReadFile(node.ManifestFile(nodeId))
 	if err != nil {
-		return err
+		return fmt.Errorf("manifest not found for node ID '%s'", nodeId)
 	}
 
 	//marshall and unmarshall again for better indentation
@@ -55,9 +55,9 @@ func inspectNode(nodeId string) error {
 	}
 	jsonWithIndentation, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to parse JSON manifest and metadata for node ID '%s'", nodeId)
 	}
 
-	fmt.Print(string(jsonWithIndentation))
+	fmt.Println(string(jsonWithIndentation))
 	return nil
 }

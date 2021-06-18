@@ -15,10 +15,11 @@ instance. If a manifest path is not provided the node is created with no collect
 
 Example: apio-orchestrator create my-client-crm`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := createNode(args[0]); err != nil {
+			nodeId := args[0]
+			if err := createNode(nodeId); err != nil {
 				onError(err)
 			}
-			fmt.Printf("Apio node '%s' created successfully", args[0])
+			fmt.Printf("Apio node '%s' created successfully\n", nodeId)
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {

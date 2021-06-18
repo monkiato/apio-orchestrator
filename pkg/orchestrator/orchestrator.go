@@ -62,18 +62,22 @@ func NewNodeOrchestrator(nodeId string, nodeDockerConfig *node.DockerConfig, per
 
 //CreateNode create new Apio node in docker. Node metadata is also updated.
 func (orchestrator *NodeOrchestrator) CreateNode() (*models.Node, error) {
+	if _, err := ioutil.ReadFile(node.MetadataFile(orchestrator.node.Name)); err == nil {
+		// manifest exists, meaning a node with the same name exists already
+		return nil, fmt.Errorf("node with ID '%s' already exists", orchestrator.node.Name)
+	}
 	if err := node.CreateNodeConfigFolder(orchestrator.node.Name); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create node config folder at '%s'. \n\n%s", node.NodeFolder(orchestrator.node.Name), err.Error())
 	}
 	if err := orchestrator.createNodeManifest(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create node manifest file at '%s'. \n\n%s", node.ManifestFile(orchestrator.node.Name), err.Error())
 	}
 	if err := orchestrator.ensureNetworkIsCreated(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating docker network '%s'. \n\n%s", orchestrator.nodeDockerConfig.NetworkName, err.Error())
 	}
 	containerId, err := orchestrator.createContainer()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to create docker container for nodeId '%s'\n\n%s", orchestrator.node.Name, err.Error())
 	}
 
 	node := &models.Node{
